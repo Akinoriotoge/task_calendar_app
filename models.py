@@ -31,3 +31,13 @@ def delete_task(task_id):
 
     conn.commit()
     conn.close()
+
+def get_task_by_id(task_id):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
+    row = cur.fetchone()
+
+    conn.close()
+    return row
