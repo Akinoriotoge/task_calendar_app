@@ -10,6 +10,7 @@ from datetime import date
 from tkinter import filedialog
 from ics_handler import save_ics
 from models import get_task_by_id
+from PIL import ImageDraw
 
 def create_ui():
     root = tk.Tk()
@@ -40,19 +41,6 @@ def create_ui():
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
     bg_label.image = bg_photo
     
-    from PIL import ImageDraw
-    
-    fade_width = 520
-    fade_height = 380
-
-    # 半透明ダーク画像
-    fade_image = Image.new("RGBA", (fade_width, fade_height), (0, 0, 0, 80))
-    fade_photo = ImageTk.PhotoImage(fade_image)
-
-    fade_label = tk.Label(root, image=fade_photo, bd=0)
-    fade_label.image = fade_photo
-    fade_label.place(relx=0.5, rely=0.45, anchor="center")
-
     # ==========================
     # カレンダー
     # ==========================
@@ -74,30 +62,7 @@ def create_ui():
         othermonthweforeground="#cc6666",
     )
 
-    cal.place(relx=0.5, rely=0.45, anchor="center")
-
-    # 画面更新（サイズ確定させる）
-    root.update_idletasks()
-
-    # カレンダーの実サイズ取得
-    cal_width = cal.winfo_width()
-    cal_height = cal.winfo_height()
-
-    # 余白を足す
-    padding = 40
-    card_width = cal_width + padding
-    card_height = cal_height + padding
-
-    # 半透明カード作成（黒系がおすすめ）
-    fade_image = Image.new("RGBA", (card_width, card_height), (0, 0, 0, 120))
-    fade_photo = ImageTk.PhotoImage(fade_image)
-
-    fade_label = tk.Label(root, image=fade_photo, bd=0)
-    fade_label.image = fade_photo
-    fade_label.place(relx=0.5, rely=0.45, anchor="center")
-
-    # カレンダーを最前面へ
-    cal.lift()
+    cal.place(relx=0.5, rely=0.48, anchor="center")
 
     import calendar
     from datetime import date
@@ -110,25 +75,70 @@ def create_ui():
     tk.Button(
         root,
         text="今日へ",
-        font=("Yu Gothic UI", 10),
+        font=("x12y16pxMaruMonica", 14),
         command=go_today
     ).place(relx=0.9, rely=0.05)
 
+    def open_credit():
+        credit_window = tk.Toplevel(root)
+        credit_window.title("Credit")
+        credit_window.geometry("420x340")
+        credit_window.resizable(False, False)
+        credit_window.configure(bg="#1e1e1e")
 
-    def highlight_today(year, month):
-        cal.calevent_remove('today')
+        credit_window.transient(root)
+        credit_window.grab_set()
 
-        today = date.today()
-        if today.year == year and today.month == month:
-            cal.calevent_create(today, '', 'today')
+        # タイトル
+        tk.Label(
+            credit_window,
+            text="Credit",
+            font=("x10y12pxDonguriDuel", 18),
+            fg="white",
+            bg="#1e1e1e"
+        ).pack(pady=(20, 15))
 
-        cal.tag_config(
-            'today',
-            background='#e8f2ff',   # 薄い青
-            foreground='black',    
-            borderwidth=3,
-            relief='solid'
-        )
+        tk.Label(
+            credit_window,
+            text="Application Developer\nLusi",
+            font=("x10y12pxDonguriDuel", 12),
+            fg="#ffffff",
+            bg="#1e1e1e",
+            justify="center"
+        ).pack(pady=5)
+
+        tk.Label(
+            credit_window,
+            text="Fonts\n"
+                 "x10y12pxDonguriDuel\n"
+                 "x12y16pxMaruMonica\n"
+                 "Author: 患者長ひっく様\n"
+                 "https://hicchicc.github.io/00ff/",
+            font=("x12y16pxMaruMonica", 10 ,"bold"),
+            fg="#cccccc",
+            bg="#1e1e1e",
+            justify="center"
+        ).pack(pady=8)
+
+        tk.Label(
+            credit_window,
+            text="Background Material\n"
+                 "空の背景素材\n"
+                 "Author: 優月ねむ様\n"
+                 "https://yudukinemu.booth.pm/",
+            font=("x12y16pxMaruMonica", 10, "bold"),
+            fg="#cccccc",
+            bg="#1e1e1e",
+            justify="center"
+        ).pack(pady=8)
+
+        tk.Button(
+            credit_window,
+            text="Close",
+            command=credit_window.destroy
+        ).pack(pady=15)
+
+
 
     def mark_event_days():
         cal.calevent_remove("event")
@@ -143,6 +153,16 @@ def create_ui():
             cal.calevent_create(date(y, m, d), "●", "event")
 
         cal.tag_config("event", foreground="green")
+
+    def highlight_today(year, month):
+        cal.calevent_remove("today")
+
+        today = date.today()
+
+        if today.year == year and today.month == month:
+            cal.calevent_create(today, "Today", "today")
+
+        cal.tag_config("today", background="#4444aa", foreground="white")
 
     #初回実行部分
     m, y = cal.get_displayed_month()
@@ -165,7 +185,7 @@ def create_ui():
 
     listbox = tk.Listbox(
         list_frame,
-        font=("Yu Gothic UI", 10),
+        font=("x12y16pxMaruMonica", 12),
         bd=0
     )
     listbox.pack(fill="both", expand=True, padx=10, pady=10)
@@ -249,7 +269,7 @@ def create_ui():
     delete_button = tk.Button(
         button_frame,
         text="削除",
-        font=("Yu Gothic UI", 10),
+        font=("x12y16pxMaruMonica", 14),
         command=delete_selected
     )
     delete_button.pack(side="left", padx=10)
@@ -257,10 +277,18 @@ def create_ui():
     export_button = tk.Button(
         button_frame,
         text="ICS保存",
-        font=("Yu Gothic UI", 10),
+        font=("x12y16pxMaruMonica", 14),
         command=export_selected_ics
     )
     export_button.pack(side="left", padx=10)
+
+    credit_button = tk.Button(
+        button_frame,
+        text="Credit",
+        font=("x12y16pxMaruMonica", 14),
+        command=open_credit
+    )
+    credit_button.pack(side="left", padx=10)
 
     def open_event_editor(date):
 

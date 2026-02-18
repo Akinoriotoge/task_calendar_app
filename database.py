@@ -1,10 +1,15 @@
 import sqlite3
 import os
-
-DB_PATH = os.path.join("data", "tasks.db")
+import sys
 
 def get_connection():
-    return sqlite3.connect(DB_PATH)
+    if getattr(sys, 'frozen', False):
+        base_dir = os.path.dirname(sys.executable)
+    else:
+        base_dir = os.path.dirname(__file__)
+
+    db_path = os.path.join(base_dir, "tasks.db")
+    return sqlite3.connect(db_path)
 
 def init_db():
     conn = get_connection()

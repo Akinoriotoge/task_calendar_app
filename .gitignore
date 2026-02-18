@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 tasks.db
 data/
+
+dist/
+build/
+*.spec
